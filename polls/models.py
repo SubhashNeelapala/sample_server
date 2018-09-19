@@ -3,6 +3,11 @@ from pygments.lexers import get_all_lexers
 from pygments.styles import get_all_styles
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
+from polls.base import BaseModel
+
+
+
+
 LEXERS = [item for item in get_all_lexers() if item[1]]
 LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
 STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
@@ -10,6 +15,18 @@ STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
 
 ALLOW_NUMBER_ONLY = RegexValidator(r'^[0-9]*$',
                                    'Only numeric characters are allowed.')
+
+class Department(BaseModel):
+    name = models.CharField(max_length=30)
+    
+    def __str__(self):
+        return '%s' % self.name
+
+    class Meta:
+        verbose_name_plural = "Department"
+        verbose_name = 'Department'
+        ordering = ('name',)
+
 
 
 class User(AbstractUser):
@@ -23,6 +40,7 @@ class User(AbstractUser):
                                     blank=True,
                                     )
     AbstractUser._meta.get_field('email').max_length = 60
+    department = models.ForeignKey(Department, blank=True, null=True)
     
     def __str__(self):
         return '%s' % self.username
@@ -44,3 +62,4 @@ class Snippet(models.Model):
     class Meta:
     	verbose_name='code'
         ordering = ('created',)
+
