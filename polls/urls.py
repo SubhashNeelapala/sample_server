@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^login/',views.UserLogin.as_view()),
     url(r'^registration',views.UserRegistration.as_view()),
     url(r'^getallusers',views.GetAllUsers.as_view()),
-    url(r'^userbasedlist',views.GetUsers_by_loginUser.as_view())
+    url(r'^userbasedlist',views.GetUsers_by_loginUser.as_view()),
+    url(r'^userdetails_byname',views.ProfileDetails.as_view())
 ]

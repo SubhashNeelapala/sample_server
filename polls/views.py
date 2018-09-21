@@ -169,3 +169,7 @@ class GetUsers_by_loginUser(APIView):
             user_obj = User.objects.all().values('first_name','last_name','mobile_number','id','age','username','department__name')
         return Response(user_obj,status=200)
 
+class ProfileDetails(APIView):
+    def post(self,request):
+        user_obj=User.objects.filter(username=request.data['username']).values('first_name','last_name','mobile_number','id','age','username','department__name')
+        return Response(user_obj,status=200)
