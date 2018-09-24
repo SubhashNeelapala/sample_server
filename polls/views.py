@@ -156,7 +156,7 @@ class UserRegistration(APIView):
 
 class GetAllUsers(APIView):
 	def get(self,request):
-		user_obj=User.objects.all().values('first_name','last_name','mobile_number','id','age','username').exclude(username='root')
+		user_obj=User.objects.all().values('first_name','last_name','mobile_number','id','age','username','email').exclude(username='root')
 		return Response(user_obj,status=200)	
 
 
@@ -164,12 +164,44 @@ class GetUsers_by_loginUser(APIView):
 
     def post(self,request):
         if request.data['department'] != 'None':
-            user_obj = User.objects.filter(department__name=request.data['department']).values('first_name','last_name','mobile_number','id','age','username','department__name')
+            user_obj = User.objects.filter(department__name=request.data['department']).values('first_name','last_name','mobile_number','id','age','username','department__name','email')
         else:
-            user_obj = User.objects.all().values('first_name','last_name','mobile_number','id','age','username','department__name')
+            user_obj = User.objects.all().values('first_name','last_name','mobile_number','id','age','username','department__name','email')
         return Response(user_obj,status=200)
 
 class ProfileDetails(APIView):
     def post(self,request):
-        user_obj=User.objects.filter(username=request.data['username']).values('first_name','last_name','mobile_number','id','age','username','department__name')
+        user_obj=User.objects.filter(username=request.data['username']).values('first_name','last_name','mobile_number','id','age','username','department__name','email')
         return Response(user_obj,status=200)
+
+class UserProfile(APIView):
+    def get(self,request):
+        serializer = UserUpdateSerializer()
+        return Response(serializer.data)
+    def post(self,request):
+        serializer = UserUpdateSerializer(data=request.data)
+        if serializer.is_valid():
+            user_form_data={
+            "username":request.data['username'],
+            "first_name":request.data['first_name'],
+            "last_name":request.data['last_name'],
+            "email":request.data['email'],
+            "mobile_number":request.data['mobile_number'],
+            "age":request.data['age']
+            }
+            user_obj=User.objects.get(mobile_number=user_form_data['mobile_number'])
+            user_obj.first_name=user_form_data['first_name']
+            user_obj.last_name=user_form_data['last_name']
+            user_obj.mobile_number=user_form_data['mobile_number']
+            user_obj.username=user_form_data['username']
+            user_obj.age=user_form_data['age']
+            user_obj.email=user_form_data['email']
+            user_obj.save()
+            return Response({"msg":"You're details updated successfully"})
+        else:
+            return Response(serializer.errors)
+
+class DeleteUser(APIView):
+    def post(self,request):
+        user_obj=User.objects.filter(id=request.data['id']).delete()
+        return Response({"msg":"User Deleted Successfully"})

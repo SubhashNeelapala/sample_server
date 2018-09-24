@@ -52,7 +52,7 @@ class UserUpdateSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=50)
     mobile_number = serializers.IntegerField()
     age = serializers.IntegerField()
-
+    email=serializers.EmailField()
     def validate_username(self,value):
         if len(value) < 2:
             raise serializers.ValidationError("Username Required")

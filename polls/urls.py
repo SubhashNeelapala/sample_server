@@ -8,5 +8,7 @@ urlpatterns = [
     url(r'^registration',views.UserRegistration.as_view()),
     url(r'^getallusers',views.GetAllUsers.as_view()),
     url(r'^userbasedlist',views.GetUsers_by_loginUser.as_view()),
-    url(r'^userdetails_byname',views.ProfileDetails.as_view())
-]
+    url(r'^userdetails_byname',views.ProfileDetails.as_view()),
+    url(r'^update_profile',views.UserProfile.as_view()),
+    url(r'^delete_user',views.DeleteUser.as_view())
+    ]
