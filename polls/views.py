@@ -6,6 +6,9 @@ from polls.models import Snippet,User
 from polls.serializers import SnippetSerializer,UserregistrationSerializer,LoginSerializer,UserUpdateSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import csv 
+import sys
+from django.http import HttpResponse
 
 @api_view(['GET', 'POST'])
 def snippet_list(request,format=None):
@@ -164,9 +167,9 @@ class GetUsers_by_loginUser(APIView):
 
     def post(self,request):
         if request.data['department'] != 'None':
-            user_obj = User.objects.filter(department__name=request.data['department']).values('first_name','last_name','mobile_number','id','age','username','department__name','email')
+            user_obj = User.objects.filter(department__name=request.data['department']).values('first_name','last_name','mobile_number','id','age','username','department__name','email').exclude(username='root')
         else:
-            user_obj = User.objects.all().values('first_name','last_name','mobile_number','id','age','username','department__name','email')
+            user_obj = User.objects.all().values('first_name','last_name','mobile_number','id','age','username','department__name','email').exclude(username='root')
         return Response(user_obj,status=200)
 
 class ProfileDetails(APIView):
@@ -205,3 +208,22 @@ class DeleteUser(APIView):
     def post(self,request):
         user_obj=User.objects.filter(id=request.data['id']).delete()
         return Response({"msg":"User Deleted Successfully"})
+
+@api_view(['GET'])
+def csv_download(request,uid):
+     # sys.setdefaultencoding('utf8')
+     response = HttpResponse(content_type='text/csv')
+     # current_date = datetime.now().strftime("%Y-%m-%d : %H-%M-%S %p")
+     filename = "Downolad_csv.csv"
+     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+     # fieldnames = csv_data[0].keys()
+
+     fieldnames = ['username', 'first_name', 'last_name', 'age', 'email', 'mobile_number', 'department__name']
+     writer = csv.writer(response)
+     writer.writerow(fieldnames)
+     user_obj=User.objects.filter(department=uid).values('first_name','last_name','mobile_number','age','username','department__name','email')
+     for each_dict in user_obj:
+         value = each_dict.values()
+         writer.writerow(list(value))
+
+     return response
