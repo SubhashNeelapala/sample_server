@@ -11,5 +11,5 @@ urlpatterns = [
     url(r'^userdetails_byname',views.ProfileDetails.as_view()),
     url(r'^update_profile',views.UserProfile.as_view()),
     url(r'^delete_user',views.DeleteUser.as_view()),
-    url(r'^csv_download/(?P<uid>[0-9])',views.csv_download)
+    url(r'^csv_download/(?P<uid>[0-9]?)',views.csv_download)
     ]

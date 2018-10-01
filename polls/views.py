@@ -76,7 +76,8 @@ class UserLogin(APIView):
                         "mobile_number":user_obj.mobile_number,
                         "first_name":user_obj.first_name,
                         "last_name":user_obj.last_name,
-                        "department":user_obj.department.name
+                        "department":user_obj.department.name,
+                        "did":user_obj.department.id
                         }
                         return Response({"msg":"You are logged in successfully","data":user_data,"success":True})
                     else:
@@ -221,9 +222,16 @@ def csv_download(request,uid):
      fieldnames = ['username', 'first_name', 'last_name', 'age', 'email', 'mobile_number', 'department__name']
      writer = csv.writer(response)
      writer.writerow(fieldnames)
-     user_obj=User.objects.filter(department=uid).values('first_name','last_name','mobile_number','age','username','department__name','email')
-     for each_dict in user_obj:
-         value = each_dict.values()
-         writer.writerow(list(value))
+     if uid != "":
+         user_obj=User.objects.filter(department=uid).values('first_name','last_name','mobile_number','age','username','department__name','email')
+         for each_dict in user_obj:
+             value = each_dict.values()
+             writer.writerow(list(value))
 
-     return response
+         return response
+     else:
+        user_obj=User.objects.all().values('first_name','last_name','mobile_number','age','username','department__name','email').exclude(username='root')
+        for each_dict in user_obj:
+            value = each_dict.values()
+            writer.writerow(list(value))
+        return response
